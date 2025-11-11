@@ -1,36 +1,42 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import LandingPage from './components/LandingPage';
-import CompaniesTable from './components/CompaniesTable';
-import type { Company } from './types/company';
-import { AlertCircle, Loader } from 'lucide-react';
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import LandingPage from "./components/LandingPage";
+import CompaniesTable from "./components/CompaniesTable";
+import type { Company } from "./types/company";
+import { AlertCircle, Loader } from "lucide-react";
 
 const App = () => {
-  const [currentView, setCurrentView] = useState<'landing' | 'companies'>('landing');
+  const [currentView, setCurrentView] = useState<"landing" | "companies">(
+    "landing"
+  );
 
-  const { data: companies = [], isLoading, error } = useQuery<Company[]>({
-    queryKey: ['companies'],
+  const {
+    data: companies = [],
+    isLoading,
+    error,
+  } = useQuery<Company[]>({
+    queryKey: ["companies"],
     queryFn: async () => {
-      const response = await fetch('http://localhost:3000/companies');
+      const response = await fetch(import.meta.env.VITE_API_URL);
       if (!response.ok) {
-        throw new Error('Failed to fetch companies');
+        throw new Error("Failed to fetch companies");
       }
       return response.json();
     },
-    enabled: currentView === 'companies',
+    enabled: currentView === "companies",
   });
 
   const handleViewCompanies = () => {
-    setCurrentView('companies');
+    setCurrentView("companies");
   };
 
   const handleBackToLanding = () => {
-    setCurrentView('landing');
+    setCurrentView("landing");
   };
 
   return (
     <div className="min-h-screen">
-      {currentView === 'landing' ? (
+      {currentView === "landing" ? (
         <LandingPage onViewCompanies={handleViewCompanies} />
       ) : (
         <>
@@ -46,9 +52,13 @@ const App = () => {
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
               <div className="flex flex-col items-center space-y-4 max-w-md">
                 <AlertCircle className="h-8 w-8 text-red-600" />
-                <p className="text-gray-900 font-semibold">Error loading companies</p>
+                <p className="text-gray-900 font-semibold">
+                  Error loading companies
+                </p>
                 <p className="text-gray-600 text-center">
-                  {error instanceof Error ? error.message : 'An unexpected error occurred'}
+                  {error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred"}
                 </p>
                 <button
                   onClick={handleBackToLanding}
@@ -60,7 +70,10 @@ const App = () => {
             </div>
           )}
           {!isLoading && !error && (
-            <CompaniesTable companies={companies} onBack={handleBackToLanding} />
+            <CompaniesTable
+              companies={companies}
+              onBack={handleBackToLanding}
+            />
           )}
         </>
       )}
